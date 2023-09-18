@@ -55,7 +55,8 @@
                                                  height: 100%;
                                                  margin-top: 15px;
                                                  color:#ffffff;
-                                                 background: chartreuse">75%</div>
+                                                 background: chartreuse;
+                                                 text-align: center;">75%</div>
                                         </div>
                                     </div>
 
