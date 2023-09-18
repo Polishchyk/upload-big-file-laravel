@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+//Route::GET('/upload', [UploadController::class, 'upload']);
+//Route::POST('/upload', [UploadController::class, 'upload']);
+
+Route::match(array('GET', 'POST'), '/upload', [UploadController::class, 'upload']);
