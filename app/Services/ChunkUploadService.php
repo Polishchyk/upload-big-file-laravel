@@ -5,9 +5,13 @@ namespace App\Services;
 use App\Contracts\ChunkUploadService as ChunkUploadServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Traits\ApiResponser;
 
 class ChunkUploadService implements ChunkUploadServiceInterface{
+
+    use ApiResponser;
 
     public bool $debug = false;
 
@@ -19,7 +23,7 @@ class ChunkUploadService implements ChunkUploadServiceInterface{
 
     protected Request $request;
 
-    protected $response;
+    protected $response = array();
 
     protected $params;
 
@@ -56,9 +60,11 @@ class ChunkUploadService implements ChunkUploadServiceInterface{
         $chunkNumber = $this->resumableParam('chunkNumber');
 
         if (!$this->isChunkUploaded($identifier, $filename, $chunkNumber)) {
-            return $this->response = 204;
+            //return $this->response = 204;
+            return $this->error('Chunk not found', 204);
         } else {
-            return $this->response = 200;
+            //return $this->response = 200;
+            return $this->success(['path' => ''], 'OK', 200);
         }
     }
 
@@ -77,22 +83,30 @@ class ChunkUploadService implements ChunkUploadServiceInterface{
         }
 
         if ($this->isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)) {
-            $this->createFileAndDeleteTmp($identifier, $filename);
+            $url = $this->createFileAndDeleteTmp($identifier, $filename);
 
-            return $this->response = 201;
+            //return $this->response = 201;
+            return $this->success(['url' => url($url)], 'OK', 200);
         }
 
-        return $this->response = 200;
+        //return $this->response = 200;
+        return $this->success([], 'OK', 200);
     }
 
     private function createFileAndDeleteTmp($identifier, $filename)
     {
         $chunkFiles = File::files($this->tmpChunkDir($identifier));
+        $destFile = $this->uploadFolder . DIRECTORY_SEPARATOR . $filename;
 
-        if ($this->createFileFromChunks($chunkFiles, $this->uploadFolder . DIRECTORY_SEPARATOR . $filename)
+        if ($this->createFileFromChunks($chunkFiles, $destFile)
             && $this->deleteTmpFolder) {
 
             File::deleteDirectory($this->tmpChunkDir($identifier));
+
+            File::move( $destFile, public_path('/storage/files/'.$filename) );
+
+            return Storage::url('files/'.$filename);
+
         }
     }
 

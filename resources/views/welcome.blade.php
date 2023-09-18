@@ -38,6 +38,7 @@
                                 <div class="card">
                                     <div class="card-header text-center">
                                         <h5>Upload File / Завантажити файл</h5>
+                                        <p style="font-size: 11px;">(Підтримувані формат завантажень: "mp4")</p>
                                     </div>
 
                                     <div class="card-body">
@@ -51,7 +52,10 @@
                                                  aria-valuemin="0"
                                                  aria-valuemax="100"
                                                  style="width: 75%;
-                                                 height: 100%">75%</div>
+                                                 height: 100%;
+                                                 margin-top: 15px;
+                                                 color:#ffffff;
+                                                 background: chartreuse">75%</div>
                                         </div>
                                     </div>
 

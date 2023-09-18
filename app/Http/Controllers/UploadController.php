@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Contracts\ChunkUploadService;
-use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\File;
 
 class UploadController extends Controller
 {
-    use ApiResponser;
 
     private ChunkUploadService $ChunkUploadService;
     private string $tmpPath;
@@ -24,8 +22,6 @@ class UploadController extends Controller
 
     /**
      * Обробка запитів від клієнта resumable.js
-     *
-     * @return Response
      */
     public function upload(Request $request)
     {
@@ -42,18 +38,6 @@ class UploadController extends Controller
         $this->ChunkUploadService->setDebugMode(true);
         $this->ChunkUploadService->setRequest($request);
 
-        $result = $this->ChunkUploadService->process();
-
-        switch($result) {
-            case 200:
-            case 201:
-                return $this->success(['path' => ''], 'OK', 200);
-                break;
-            case 204:
-                return $this->error('Chunk not found', 204);
-                break;
-            default:
-                return $this->error('An error occurred', 404);
-        }
+        return $this->ChunkUploadService->process();
     }
 }
